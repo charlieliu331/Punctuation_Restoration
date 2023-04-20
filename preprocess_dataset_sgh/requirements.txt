@@ -1,0 +1,7 @@
+pandas
+fast_ml
+scikit-learn
+tqdm
+IPython
+seaborn
+textgrid
