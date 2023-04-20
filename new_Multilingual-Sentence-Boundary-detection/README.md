@@ -85,11 +85,12 @@ optional arguments:
 Sample command:
 
 ```
-python main.py \
---model-path  '/content/drive/MyDrive/SUD_PROJECT/neural-punctuator/models-xlm-roberta-dual/' \
---num-epochs 2 \
---data-path '/content/drive/MyDrive/SUD_PROJECT/neural-punctuator/dataset/en/xlm-roberta-base/'  \
---stage 'xlm-roberta-base-epoch-1.pth'
+$ cd /new_Multilingual-Sentence-Boundary-detection/
+#training
+$ python3 ./src/main.py --num-epochs 10 --train-data-path /TED/xlm-roberta-base/ --val-data-path TED/xlm-roberta-base/ --model-path /punctuator-model/TED_10epoch- --eval-type valid/tst
+#testing
+$ python3 ./src/main.py --train-data-path /TED/xlm-roberta-base/ --val-data-path /TED/xlm-roberta-base/ --action val --model-path /path/to/model/dir/ --stage TED_10epoch-xlm-roberta-base-epoch-1.pth --eval-type valid/tst
+```
 ```
 
 **NOTE**: Make sure that any directory mentioned in the command actually exists!  
