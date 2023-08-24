@@ -121,51 +121,44 @@ target2id = {value: key for key, value in id2target.items()}
 def create_target(text):
     encoded_words, targets = [], []
     
-    words = list(jieba.cut(text,HMM=True)) ## ignore the first space
-    words2 = []
-    for i in range(len(words)):
-        encoded_word = tokenizer.encode(words[i])
-        #print(words[i],encoded_word)
-        if (len(encoded_word[1:-1]) > 1 and encoded_word[1] != 6) or (len(encoded_word[1:-1]) > 2 and encoded_word[1] == 6):
-            for word in encoded_word[1:-1]:
-                if word != 6:
-                    encoded_words.append(word)
-                    targets.append(-1)
-            targets = targets[:-1]   
-        elif len(encoded_word[1:-1]) == 0:
-            continue
+    words = text.split(' ')
+
+    for word in words:
+        target = 0
+        for target_token, target_id in target_token2id.items():
+            if word.endswith(target_token):
+                word = word.rstrip(target_token)
+                target = id2target[target_id]
+
+        encoded_word = tokenizer.encode(word, add_special_tokens=False)
+        
+        #test code
+        #if not len(encoded_word)>0:
+            #print(words)
+            #print(word)
+            #print(encoded_word)
+
+
+        for w in encoded_word:
+            encoded_words.append(w)
+        for _ in range(len(encoded_word)-1):
+            targets.append(-1)
+        targets.append(0)
+        
+        if target != 0:
+            encoded_words.append(target2id[target])
         else:
-            #print("Here! ",encoded_word)
-            s = 2 if encoded_word[1] == 6 else 1
-            encoded_words.append(encoded_word[s])
-                
-            
-            
-        if words[i] not in ["。","，"," ","▁"]:
-            if i < len(words) -1 and words[i+1] in ["。","，"," ","▁"]:
-                ##words2.append(words[i])
-                targets.append(0)
-                pass
-            else:
-                targets.append(0)
-                encoded_words.append(6)
-                targets.append(0)
-        else:
-            if words[i] in ["▁"," "]:
-                if i > 0 and words[i-1] not in ["。","，"," ","▁"]:
-                    #encoded_words.append(" ")
-                    #targets.append(0)
-                    pass
-            else:
-                #print("YES",words[i])
-                targets.append(id2target[target_token2id[words[i]]])
-                # words2.append(words[i])
-    
+            encoded_words.append(250004)
+        targets.append(target)
+        
+        
+
+        assert(len(encoded_word)>0)
+
     encoded_words = [tokenizer.cls_token_id or tokenizer.bos_token_id] +\
                     encoded_words +\
                     [tokenizer.sep_token_id or tokenizer.eos_token_id]
-    
-    targets = [-1]+ targets + [-1]    
+    targets = [-1] + targets + [-1]
     
     return encoded_words, targets
 
